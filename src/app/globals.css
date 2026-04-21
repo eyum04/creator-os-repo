@@ -2,25 +2,42 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #1a1615;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-inter);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), Inter, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Blue canvas — breathing aurora through the blue family */
+@keyframes blueShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.canvas-bg {
+  background: linear-gradient(
+    135deg,
+    #9cc1e7 0%,
+    #b4d0ee 20%,
+    #84b9ef 45%,
+    #aac8e9 70%,
+    #9cc1e7 100%
+  );
+  background-size: 350% 350%;
+  animation: blueShift 20s ease infinite;
+}
+
+/* Dark section */
+.dark-bg {
+  background-color: #1a1615;
 }

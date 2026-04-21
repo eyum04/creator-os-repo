@@ -1,0 +1,293 @@
+'use client'
+
+import { useUser } from '@clerk/nextjs'
+import { useEffect, useState, useCallback } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
+import Link from 'next/link'
+import { motion } from 'framer-motion'
+import { useSupabaseClient } from '@/lib/supabase'
+import { useAppContext } from './_context'
+import { PillarBadge } from '@/components/ui/PillarBadge'
+import { StageBadge } from '@/components/ui/StageBadge'
+import { STAGE_COLORS, type IdeaWithPillar } from '@/lib/types'
+
+const spring = { type: 'spring' as const, stiffness: 100, damping: 20 }
+const container = { hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }
+const item = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: spring } }
+
+const DAYS_SHORT = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
+const MONTHS = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+]
+
+function parseLocalDate(str: string) {
+  const [y, m, d] = str.substring(0, 10).split('-').map(Number)
+  return new Date(y, m - 1, d)
+}
+
+function MiniCalendar({ ideas }: { ideas: IdeaWithPillar[] }) {
+  const today = new Date()
+  const year = today.getFullYear()
+  const month = today.getMonth()
+  const firstDay = new Date(year, month, 1).getDay()
+  const daysInMonth = new Date(year, month + 1, 0).getDate()
+
+  const cells: (number | null)[] = []
+  for (let i = 0; i < firstDay; i++) cells.push(null)
+  for (let d = 1; d <= daysInMonth; d++) cells.push(d)
+  while (cells.length % 7 !== 0) cells.push(null)
+
+  const ideasForDay = (day: number) =>
+    ideas.filter(idea => {
+      if (!idea.scheduled_date) return false
+      const d = parseLocalDate(idea.scheduled_date)
+      return d.getFullYear() === year && d.getMonth() === month && d.getDate() === day
+    })
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-3">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#64748B]">Content Calendar</p>
+          <p className="text-[13px] font-semibold text-[#0F172A] mt-0.5">{MONTHS[month]} {year}</p>
+        </div>
+        <Link href="/dashboard/calendar" className="text-[12px] text-[#2563EB] font-medium hover:text-[#1D4ED8]">
+          Full calendar →
+        </Link>
+      </div>
+
+      {/* Day headers */}
+      <div className="grid grid-cols-7 mb-1">
+        {DAYS_SHORT.map((d, i) => (
+          <div key={i} className="text-[10px] font-semibold text-[#94A3B8] text-center py-1">
+            {d}
+          </div>
+        ))}
+      </div>
+
+      {/* Grid */}
+      <div className="grid grid-cols-7 gap-px bg-[#E2E8F0] rounded-xl overflow-hidden border border-[#E2E8F0]">
+        {cells.map((day, i) => {
+          const isToday = day === today.getDate()
+          const dayIdeas = day ? ideasForDay(day) : []
+          return (
+            <div
+              key={i}
+              className="bg-white p-1.5 min-h-[44px] flex flex-col"
+            >
+              {day && (
+                <>
+                  <span
+                    className={[
+                      'text-[11px] font-medium w-5 h-5 flex items-center justify-center rounded-full mx-auto mb-0.5',
+                      isToday ? 'bg-[#2563EB] text-white font-bold' : 'text-[#0F172A]',
+                    ].join(' ')}
+                  >
+                    {day}
+                  </span>
+                  <div className="flex flex-col gap-0.5">
+                    {dayIdeas.slice(0, 2).map(idea => (
+                      <Link
+                        key={idea.id}
+                        href={`/dashboard/ideas/${idea.id}`}
+                        className="block truncate text-[8px] font-semibold px-1 rounded leading-tight py-0.5"
+                        style={{
+                          backgroundColor: idea.pillar ? `${idea.pillar.color}20` : '#F1F5F9',
+                          color: idea.pillar?.color ?? STAGE_COLORS[idea.stage],
+                        }}
+                        title={idea.title}
+                      >
+                        {idea.title}
+                      </Link>
+                    ))}
+                    {dayIdeas.length > 2 && (
+                      <span className="text-[8px] text-[#94A3B8] pl-1">+{dayIdeas.length - 2}</span>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+export default function DashboardPage() {
+  const { user } = useUser()
+  const { pillars, ideaCount, loadingPillars } = useAppContext()
+  const supabase = useSupabaseClient()
+  const router = useRouter()
+  const [recentIdeas, setRecentIdeas] = useState<IdeaWithPillar[]>([])
+  const [calendarIdeas, setCalendarIdeas] = useState<IdeaWithPillar[]>([])
+  const [ideasLoading, setIdeasLoading] = useState(true)
+  const [creatorName, setCreatorName] = useState('')
+
+  useEffect(() => {
+    if (!loadingPillars && pillars.length === 0 && user) {
+      router.push('/onboarding/welcome')
+    }
+  }, [loadingPillars, pillars.length, user, router])
+
+  // Fetch creator name from users table
+  useEffect(() => {
+    if (!user) return
+    supabase.from('users').select('name').eq('id', user.id).single()
+      .then(({ data }) => { if (data?.name) setCreatorName(data.name) })
+  }, [user]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Fetch recent ideas
+  useEffect(() => {
+    if (!user || loadingPillars) return
+    supabase
+      .from('ideas')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(5)
+      .then(({ data }) => {
+        if (data) setRecentIdeas(data.map(idea => ({
+          ...idea,
+          pillar: pillars.find(p => p.id === idea.pillar_id) ?? null,
+        })) as IdeaWithPillar[])
+        setIdeasLoading(false)
+      })
+  }, [user, loadingPillars, pillars]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const pathname = usePathname()
+
+  // Re-fetch all scheduled ideas whenever the dashboard is active
+  const fetchCalendarIdeas = useCallback(() => {
+    if (!user || loadingPillars) return
+    supabase
+      .from('ideas')
+      .select('*')
+      .eq('user_id', user.id)
+      .not('scheduled_date', 'is', null)
+      .then(({ data }) => {
+        if (data) setCalendarIdeas(data.map(idea => ({
+          ...idea,
+          pillar: pillars.find(p => p.id === idea.pillar_id) ?? null,
+        })) as IdeaWithPillar[])
+      })
+  }, [user, loadingPillars, pillars]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => { fetchCalendarIdeas() }, [fetchCalendarIdeas, pathname])
+
+  const displayName = creatorName || user?.firstName || ''
+  const loading = loadingPillars || ideasLoading
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full min-h-[300px]">
+        <motion.div
+          animate={{ opacity: [0.3, 1, 0.3] }}
+          transition={{ duration: 1.6, repeat: Infinity }}
+          className="text-[#64748B] font-medium text-[15px]"
+        >
+          Loading…
+        </motion.div>
+      </div>
+    )
+  }
+
+  return (
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={container}
+      className="max-w-4xl mx-auto px-8 py-10"
+    >
+      {/* Greeting */}
+      <motion.div variants={item} className="mb-8">
+        <h1 className="text-[28px] font-bold text-[#0F172A] tracking-tight">
+          Welcome{displayName ? `, ${displayName}` : ''}! 👋
+        </h1>
+        <p className="text-[#64748B] text-[15px] mt-1">Here&apos;s what&apos;s happening with your content.</p>
+      </motion.div>
+
+      {/* Stat cards */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+        {[
+          { label: 'Total ideas', value: ideaCount },
+          { label: 'Pillars', value: pillars.length },
+          { label: 'Ideas this week', value: recentIdeas.length },
+        ].map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            variants={item}
+            custom={i}
+            className="bg-[#F8F9FA] border border-[#E2E8F0] rounded-2xl p-5"
+          >
+            <div className="text-[32px] font-bold text-[#0F172A] leading-none mb-1">{stat.value}</div>
+            <div className="text-[13px] text-[#64748B]">{stat.label}</div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Mini calendar */}
+      <motion.div variants={item} className="bg-[#F8F9FA] border border-[#E2E8F0] rounded-2xl p-5 mb-6">
+        <MiniCalendar ideas={calendarIdeas} />
+      </motion.div>
+
+      {/* Quick links */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        {[
+          { href: '/dashboard/pipeline', label: 'Go to Pipeline', sub: 'Manage your idea stages', icon: '▤' },
+          { href: '/dashboard/calendar', label: 'View Calendar', sub: 'See your posting schedule', icon: '▦' },
+        ].map(link => (
+          <motion.div key={link.href} variants={item}>
+            <Link
+              href={link.href}
+              className="flex items-center justify-between bg-white border border-[#E2E8F0] rounded-2xl p-5 hover:border-[#2563EB] hover:shadow-sm transition-all duration-150 group"
+            >
+              <div>
+                <p className="font-semibold text-[#0F172A] text-[15px]">{link.label}</p>
+                <p className="text-[13px] text-[#64748B] mt-0.5">{link.sub}</p>
+              </div>
+              <span className="text-[#2563EB] text-lg group-hover:translate-x-0.5 transition-transform duration-150">→</span>
+            </Link>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Recent ideas */}
+      <motion.div variants={item} className="bg-[#F8F9FA] border border-[#E2E8F0] rounded-2xl p-6">
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#64748B]">Recent Ideas</p>
+          <Link href="/dashboard/pipeline" className="text-[13px] text-[#2563EB] hover:text-[#1D4ED8] font-medium">
+            View all →
+          </Link>
+        </div>
+        {recentIdeas.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-[#64748B] text-[14px] mb-3">No ideas yet.</p>
+            <Link href="/dashboard/pipeline" className="text-[13px] font-medium text-[#2563EB] hover:text-[#1D4ED8]">
+              Add your first idea in the Pipeline →
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-2.5">
+            {recentIdeas.map(idea => (
+              <Link
+                key={idea.id}
+                href={`/dashboard/ideas/${idea.id}`}
+                className="flex items-center justify-between bg-white border border-[#E2E8F0] px-4 py-3.5 rounded-xl hover:border-[#2563EB] hover:shadow-sm transition-all duration-150"
+              >
+                <div>
+                  <p className="font-medium text-[#0F172A] text-[15px]">{idea.title}</p>
+                  <div className="mt-0.5">
+                    <PillarBadge pillar={idea.pillar} />
+                  </div>
+                </div>
+                <StageBadge stage={idea.stage} />
+              </Link>
+            ))}
+          </div>
+        )}
+      </motion.div>
+    </motion.div>
+  )
+}
