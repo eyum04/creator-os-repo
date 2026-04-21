@@ -27,7 +27,7 @@ export function ConfirmDeleteModal({ itemName, onConfirm, onClose }: Props) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center px-4"
+        className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center px-4"
         onClick={onClose}
       >
         <motion.div
@@ -35,16 +35,16 @@ export function ConfirmDeleteModal({ itemName, onConfirm, onClose }: Props) {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 8 }}
           transition={spring}
-          className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl"
+          className="bg-white dark:bg-[#1E293B] rounded-2xl p-6 w-full max-w-sm shadow-xl border border-[#E2E8F0] dark:border-[#334155]"
           onClick={e => e.stopPropagation()}
         >
-          <div className="w-10 h-10 rounded-full bg-[#FEE2E2] flex items-center justify-center mb-4">
+          <div className="w-10 h-10 rounded-full bg-[#FEE2E2] dark:bg-[#450a0a] flex items-center justify-center mb-4">
             <svg viewBox="0 0 20 20" fill="#EF4444" className="w-5 h-5">
               <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
             </svg>
           </div>
-          <h2 className="text-[17px] font-bold text-[#0F172A] mb-1.5">Delete &ldquo;{itemName}&rdquo;?</h2>
-          <p className="text-[14px] text-[#64748B] mb-6">This action cannot be undone.</p>
+          <h2 className="text-[17px] font-bold text-[#0F172A] dark:text-white mb-1.5">Delete &ldquo;{itemName}&rdquo;?</h2>
+          <p className="text-[14px] text-[#64748B] dark:text-[#94A3B8] mb-6">This action cannot be undone.</p>
           <div className="flex gap-3">
             <ShimmerButton variant="secondary" onClick={onClose} className="flex-1 py-3 px-4 text-[14px]">
               Cancel

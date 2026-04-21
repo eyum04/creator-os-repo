@@ -38,7 +38,7 @@ export function ShimmerButton({
         disabled ? 'opacity-40 cursor-not-allowed' : '',
         variant === 'primary'
           ? 'bg-[#2563EB] text-white hover:bg-[#1D4ED8]'
-          : 'bg-[#F8F9FA] text-[#64748B] border border-[#E2E8F0] hover:bg-[#F1F5F9]',
+          : 'bg-[#F8F9FA] dark:bg-[#334155] text-[#64748B] dark:text-[#94A3B8] border border-[#E2E8F0] dark:border-[#475569] hover:bg-[#F1F5F9] dark:hover:bg-[#475569]',
         'transition-colors duration-150',
         className,
       ].join(' ')}

@@ -46,10 +46,10 @@ export function FocusInput({
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         style={{
-          borderColor: focused ? '#2563EB' : '#E2E8F0',
+          borderColor: focused ? '#2563EB' : undefined,
           transition: 'border-color 0.18s ease',
         }}
-        className="w-full px-4 py-3.5 bg-white border rounded-xl text-[#0F172A] text-[15px] placeholder-[#94A3B8] focus:outline-none"
+        className="w-full px-4 py-3.5 bg-white dark:bg-[#334155] border border-[#E2E8F0] dark:border-[#475569] rounded-xl text-[#0F172A] dark:text-[#F1F5F9] text-[15px] placeholder-[#94A3B8] dark:placeholder-[#64748B] focus:outline-none"
       />
     </motion.div>
   )

@@ -69,11 +69,11 @@ function LogoutIcon() {
 }
 
 const NAV = [
-  { href: '/dashboard',          label: 'Home',       Icon: HomeIcon,      exact: true },
+  { href: '/dashboard',          label: 'Home',           Icon: HomeIcon,      exact: true },
   { href: '/dashboard/pipeline', label: 'Ideas Pipeline', Icon: PipelineIcon,  exact: false },
-  { href: '/dashboard/pillars',  label: 'Pillars',    Icon: PillarsIcon,   exact: false },
-  { href: '/dashboard/calendar', label: 'Calendar',   Icon: CalendarIcon,  exact: false },
-  { href: '/dashboard/shots',    label: 'Shot Lists', Icon: ShotListIcon,  exact: false },
+  { href: '/dashboard/pillars',  label: 'Pillars',        Icon: PillarsIcon,   exact: false },
+  { href: '/dashboard/calendar', label: 'Calendar',       Icon: CalendarIcon,  exact: false },
+  { href: '/dashboard/shots',    label: 'Shot Lists',     Icon: ShotListIcon,  exact: false },
 ]
 
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
@@ -96,7 +96,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
       {/* Logo */}
       <div className="flex items-center gap-2.5 px-5 pt-5 pb-6">
         <LogoMark size={26} />
-        <span className="font-bold text-[#0F172A] text-[16px] tracking-tight">CreatorOS</span>
+        <span className="font-bold text-[#0F172A] dark:text-white text-[16px] tracking-tight">CreatorOS</span>
       </div>
 
       {/* Nav */}
@@ -112,7 +112,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
                 'flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[14px] font-medium transition-all duration-150',
                 active
                   ? 'bg-[#2563EB] text-white'
-                  : 'text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#0F172A]',
+                  : 'text-[#64748B] dark:text-[#94A3B8] hover:bg-[#F1F5F9] dark:hover:bg-[#334155] hover:text-[#0F172A] dark:hover:text-white',
               ].join(' ')}
             >
               <Icon />
@@ -125,12 +125,12 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
       {/* My Pillars */}
       {pillars.length > 0 && (
         <div className="px-5 mt-6">
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-[#94A3B8] mb-2.5">My Pillars</p>
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-[#94A3B8] dark:text-[#475569] mb-2.5">My Pillars</p>
           <div className="space-y-1.5">
             {pillars.map(p => (
               <div key={p.id} className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: p.color }} />
-                <span className="text-[13px] text-[#64748B] truncate">{p.name}</span>
+                <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] truncate">{p.name}</span>
               </div>
             ))}
           </div>
@@ -147,7 +147,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
             'flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[14px] font-medium transition-all duration-150',
             isActive('/dashboard/settings', false)
               ? 'bg-[#2563EB] text-white'
-              : 'text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#0F172A]',
+              : 'text-[#64748B] dark:text-[#94A3B8] hover:bg-[#F1F5F9] dark:hover:bg-[#334155] hover:text-[#0F172A] dark:hover:text-white',
           ].join(' ')}
         >
           <SettingsIcon />
@@ -158,9 +158,9 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
         <div className="px-2 pt-3 pb-1">
           <div className="flex items-center justify-between mb-1.5">
             <span className="text-[11px] text-[#94A3B8]">Ideas used</span>
-            <span className="text-[11px] font-medium text-[#64748B]">{ideaCount}/50</span>
+            <span className="text-[11px] font-medium text-[#64748B] dark:text-[#94A3B8]">{ideaCount}/50</span>
           </div>
-          <div className="h-1.5 bg-[#E2E8F0] rounded-full overflow-hidden">
+          <div className="h-1.5 bg-[#E2E8F0] dark:bg-[#334155] rounded-full overflow-hidden">
             <motion.div
               className="h-full bg-[#2563EB] rounded-full"
               initial={{ width: 0 }}
@@ -172,20 +172,20 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
         </div>
 
         {/* User + logout */}
-        <div className="flex items-center gap-2.5 px-3 pt-3 border-t border-[#E2E8F0]">
+        <div className="flex items-center gap-2.5 px-3 pt-3 border-t border-[#E2E8F0] dark:border-[#334155]">
           <div className="w-7 h-7 rounded-full bg-[#2563EB] flex items-center justify-center flex-shrink-0">
             <span className="text-white text-[11px] font-bold">
               {(user?.firstName?.[0] ?? user?.emailAddresses?.[0]?.emailAddress?.[0] ?? '?').toUpperCase()}
             </span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[13px] font-medium text-[#0F172A] truncate">{user?.firstName ?? 'Account'}</p>
+            <p className="text-[13px] font-medium text-[#0F172A] dark:text-white truncate">{user?.firstName ?? 'Account'}</p>
             <p className="text-[11px] text-[#94A3B8] truncate">{user?.emailAddresses?.[0]?.emailAddress}</p>
           </div>
           <button
             onClick={handleLogout}
             title="Log out"
-            className="p-1.5 rounded-lg text-[#94A3B8] hover:text-[#EF4444] hover:bg-[#FEE2E2] transition-colors duration-150 flex-shrink-0"
+            className="p-1.5 rounded-lg text-[#94A3B8] hover:text-[#EF4444] hover:bg-[#FEE2E2] dark:hover:bg-[#450a0a] transition-colors duration-150 flex-shrink-0"
           >
             <LogoutIcon />
           </button>
@@ -207,14 +207,26 @@ function Shell({ children }: { children: React.ReactNode }) {
     if (isLoaded && !isSignedIn) router.push('/sign-in')
   }, [isLoaded, isSignedIn, router])
 
-  if (!isLoaded || !isSignedIn) return null
+  if (!isLoaded || !isSignedIn) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-white dark:bg-[#0F172A]">
+        <motion.div
+          animate={{ opacity: [0.3, 1, 0.3] }}
+          transition={{ duration: 1.6, repeat: Infinity }}
+          className="text-[#64748B] font-medium text-[15px]"
+        >
+          Loading…
+        </motion.div>
+      </div>
+    )
+  }
 
   const handleLogout = () => signOut({ redirectUrl: '/' })
 
   return (
-    <div className="flex h-screen bg-white overflow-hidden">
+    <div className="flex h-screen bg-white dark:bg-[#0F172A] overflow-hidden">
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex flex-col w-[240px] flex-shrink-0 bg-[#F8F9FA] border-r border-[#E2E8F0]">
+      <aside className="hidden md:flex flex-col w-[240px] flex-shrink-0 bg-[#F8F9FA] dark:bg-[#1E293B] border-r border-[#E2E8F0] dark:border-[#334155]">
         <SidebarContent />
       </aside>
 
@@ -234,7 +246,7 @@ function Shell({ children }: { children: React.ReactNode }) {
               animate={{ x: 0 }}
               exit={{ x: -240 }}
               transition={spring}
-              className="fixed left-0 top-0 h-full w-[240px] bg-[#F8F9FA] border-r border-[#E2E8F0] z-50 md:hidden"
+              className="fixed left-0 top-0 h-full w-[240px] bg-[#F8F9FA] dark:bg-[#1E293B] border-r border-[#E2E8F0] dark:border-[#334155] z-50 md:hidden"
             >
               <SidebarContent onClose={() => setMobileOpen(false)} />
             </motion.aside>
@@ -244,13 +256,13 @@ function Shell({ children }: { children: React.ReactNode }) {
 
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top bar — mobile hamburger + desktop logout */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[#E2E8F0] flex-shrink-0">
-          {/* Left: hamburger on mobile, empty on desktop */}
+        {/* Top bar */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-[#E2E8F0] dark:border-[#334155] flex-shrink-0">
+          {/* Left: hamburger on mobile */}
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileOpen(true)}
-              className="p-1.5 rounded-lg hover:bg-[#F1F5F9] text-[#64748B] md:hidden"
+              className="p-1.5 rounded-lg hover:bg-[#F1F5F9] dark:hover:bg-[#334155] text-[#64748B] dark:text-[#94A3B8] md:hidden"
             >
               <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
                 <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
@@ -258,14 +270,14 @@ function Shell({ children }: { children: React.ReactNode }) {
             </button>
             <div className="flex items-center gap-2 md:hidden">
               <LogoMark size={22} />
-              <span className="font-bold text-[#0F172A] text-[15px]">CreatorOS</span>
+              <span className="font-bold text-[#0F172A] dark:text-white text-[15px]">CreatorOS</span>
             </div>
           </div>
 
           {/* Right: logout button */}
           <button
             onClick={handleLogout}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[13px] font-medium text-[#64748B] hover:text-[#EF4444] hover:bg-[#FEF2F2] border border-[#E2E8F0] hover:border-[#FECACA] transition-all duration-150"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[13px] font-medium text-[#64748B] dark:text-[#94A3B8] hover:text-[#EF4444] hover:bg-[#FEF2F2] dark:hover:bg-[#450a0a] border border-[#E2E8F0] dark:border-[#334155] hover:border-[#FECACA] transition-all duration-150"
           >
             <LogoutIcon />
             Log out

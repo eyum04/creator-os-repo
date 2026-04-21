@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ClerkProvider } from '@clerk/nextjs';
+import { ThemeProvider } from '@/lib/theme';
 import "./globals.css";
 
 const inter = Inter({
@@ -21,9 +22,14 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider signInFallbackRedirectUrl="/dashboard" signUpFallbackRedirectUrl="/dashboard" afterSignOutUrl="/">
-      <html lang="en" className={`${inter.variable} h-full antialiased`}>
-        <body className="min-h-full flex flex-col bg-white text-[#0F172A]">
-          {children}
+      <html lang="en" className={`${inter.variable} h-full antialiased`} suppressHydrationWarning>
+        <head>
+          <script dangerouslySetInnerHTML={{ __html: `try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.classList.add('dark');}catch(e){}` }} />
+        </head>
+        <body className="min-h-full flex flex-col bg-white dark:bg-[#0F172A] text-[#0F172A] dark:text-[#F1F5F9]">
+          <ThemeProvider>
+            {children}
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>
