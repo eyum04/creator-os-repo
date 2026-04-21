@@ -86,7 +86,7 @@ export default function ShotListsPage() {
 
       {/* Header */}
       <div className="mb-6 flex-shrink-0">
-        <h1 className="text-[26px] font-bold text-[#0F172A] tracking-tight">Shot Lists</h1>
+        <h1 className="text-[26px] font-bold text-[#0F172A] dark:text-white tracking-tight">Shot Lists</h1>
         <p className="text-[#64748B] text-[13px] mt-0.5">
           {ideas.length > 0 ? `${ideas.length} idea${ideas.length !== 1 ? 's' : ''} with shot lists` : 'Track your filming progress by pillar.'}
         </p>

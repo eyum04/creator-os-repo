@@ -202,7 +202,7 @@ export default function DashboardPage() {
     >
       {/* Greeting */}
       <motion.div variants={item} className="mb-8">
-        <h1 className="text-[28px] font-bold text-[#0F172A] tracking-tight">
+        <h1 className="text-[28px] font-bold text-[#0F172A] dark:text-white tracking-tight">
           Welcome{displayName ? `, ${displayName}` : ''}! 👋
         </h1>
         <p className="text-[#64748B] text-[15px] mt-1">Here&apos;s what&apos;s happening with your content.</p>

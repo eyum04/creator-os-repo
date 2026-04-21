@@ -64,7 +64,7 @@ export default function PillarDetailPage({ params }: { params: Promise<{ id: str
         <motion.div variants={item} className="mb-8">
           <div className="flex items-center gap-3 mb-1">
             <div className="w-5 h-5 rounded-full flex-shrink-0" style={{ backgroundColor: pillar?.color ?? '#2563EB' }} />
-            <h1 className="text-[28px] font-bold text-[#0F172A] tracking-tight">
+            <h1 className="text-[28px] font-bold text-[#0F172A] dark:text-white tracking-tight">
               {pillar?.name ?? 'Pillar'}
             </h1>
           </div>

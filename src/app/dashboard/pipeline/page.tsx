@@ -224,7 +224,7 @@ export default function PipelinePage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-2 flex-shrink-0">
         <div>
-          <h1 className="text-[26px] font-bold text-[#0F172A] tracking-tight">Ideas Pipeline</h1>
+          <h1 className="text-[26px] font-bold text-[#0F172A] dark:text-white tracking-tight">Ideas Pipeline</h1>
           <p className="text-[#64748B] text-[13px] mt-0.5">{ideas.length}/50 ideas used</p>
         </div>
         <button

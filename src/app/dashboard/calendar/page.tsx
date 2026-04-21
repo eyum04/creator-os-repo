@@ -106,7 +106,7 @@ export default function CalendarPage() {
         className="flex items-center justify-between mb-6 flex-shrink-0"
       >
         <div>
-          <h1 className="text-[26px] font-bold text-[#0F172A] tracking-tight">
+          <h1 className="text-[26px] font-bold text-[#0F172A] dark:text-white tracking-tight">
             {MONTHS[month]} {year}
           </h1>
           <p className="text-[#64748B] text-[13px] mt-0.5">Your content posting schedule</p>

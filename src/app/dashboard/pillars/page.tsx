@@ -76,7 +76,7 @@ export default function PillarsPage() {
       <motion.div initial="hidden" animate="visible" variants={container}>
         {/* Header */}
         <motion.div variants={item} className="mb-8">
-          <h1 className="text-[28px] font-bold text-[#0F172A] tracking-tight">Your Pillars</h1>
+          <h1 className="text-[28px] font-bold text-[#0F172A] dark:text-white tracking-tight">Your Pillars</h1>
           <p className="text-[#64748B] text-[15px] mt-1">Organize your content into focused themes.</p>
         </motion.div>
 

@@ -234,7 +234,7 @@ export default function IdeaDetailPage({ params }: { params: Promise<{ id: strin
               type="date"
               value={scheduledDate}
               onChange={e => setScheduledDate(e.target.value)}
-              className="w-full px-4 py-3 bg-white border border-[#E2E8F0] rounded-xl text-[#0F172A] text-[14px] focus:outline-none focus:border-[#2563EB] transition-colors duration-150"
+              className="w-full px-4 py-3 bg-white border border-[#E2E8F0] dark:border-[#475569] rounded-xl text-[#0F172A] text-[14px] focus:outline-none focus:border-[#2563EB] transition-colors duration-150"
             />
           </div>
 
@@ -246,7 +246,7 @@ export default function IdeaDetailPage({ params }: { params: Promise<{ id: strin
               onChange={e => setScript(e.target.value)}
               rows={8}
               placeholder="Write your script, hook ideas, or notes here…"
-              className="w-full px-4 py-3.5 bg-white border border-[#E2E8F0] rounded-xl text-[#0F172A] text-[14px] placeholder-[#CBD5E1] focus:outline-none focus:border-[#2563EB] resize-none transition-colors duration-150 leading-relaxed"
+              className="w-full px-4 py-3.5 bg-white border border-[#E2E8F0] dark:border-[#475569] rounded-xl text-[#0F172A] text-[14px] placeholder-[#CBD5E1] focus:outline-none focus:border-[#2563EB] resize-none transition-colors duration-150 leading-relaxed"
             />
           </div>
 
