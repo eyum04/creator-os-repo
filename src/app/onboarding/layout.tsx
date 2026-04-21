@@ -12,6 +12,7 @@ const STEP_MAP: Record<string, number> = {
 }
 
 const PREV_MAP: Record<string, string> = {
+  '/onboarding/welcome': '/sign-up',
   '/onboarding/name': '/onboarding/welcome',
   '/onboarding/pillars': '/onboarding/name',
   '/onboarding/idea': '/onboarding/pillars',
