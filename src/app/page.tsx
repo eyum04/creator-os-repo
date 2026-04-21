@@ -1,10 +1,9 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion, useInView, useScroll, useTransform, AnimatePresence } from 'framer-motion'
-import { useAuth } from '@clerk/nextjs'
+import { useAuth, useClerk } from '@clerk/nextjs'
 
 // ─── Spring presets ───────────────────────────────────────────────────────────
 const sp = { type: 'spring' as const, stiffness: 100, damping: 20 }
@@ -289,7 +288,7 @@ function Navbar() {
           >
             Sign in
           </Link>
-          <DarkButton href="/sign-up" size="sm">
+          <DarkButton href="/sign-in" size="sm">
             Get started
           </DarkButton>
         </div>
@@ -371,7 +370,7 @@ function HeroSection() {
           transition={{ ...sp, delay: 0.3 + totalWords * 0.08 + 0.25 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10"
         >
-          <DarkButton href="/sign-up" size="lg">
+          <DarkButton href="/sign-in" size="lg">
             Get started free
           </DarkButton>
           <OutlineButton onClick={() => scrollTo('how-it-works')} size="lg">
@@ -1626,7 +1625,7 @@ function CTASection() {
             Join for free. No credit card required.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <WhiteButton href="/sign-up" size="lg">
+            <WhiteButton href="/sign-in" size="lg">
               Get started free →
             </WhiteButton>
             <OutlineButton onClick={() => {}} size="lg" onDark>
@@ -1698,13 +1697,11 @@ function Footer() {
 
 export default function LandingPage() {
   const { isSignedIn, isLoaded } = useAuth()
-  const router = useRouter()
+  const { signOut } = useClerk()
 
   useEffect(() => {
-    if (isLoaded && isSignedIn) {
-      router.push('/dashboard')
-    }
-  }, [isLoaded, isSignedIn, router])
+    if (isLoaded && isSignedIn) signOut()
+  }, [isLoaded, isSignedIn]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="relative">

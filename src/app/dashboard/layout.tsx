@@ -83,7 +83,6 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
   const { pillars, ideaCount } = useAppContext()
   const { signOut } = useClerk()
   const { user } = useUser()
-  const router = useRouter()
   const usagePct = Math.min((ideaCount / 50) * 100, 100)
 
   const isActive = (href: string, exact: boolean) =>
@@ -201,13 +200,21 @@ function Shell({ children }: { children: React.ReactNode }) {
   const { isSignedIn, isLoaded } = useAuth()
   const { signOut } = useClerk()
   const router = useRouter()
+  const { pillars, loadingPillars } = useAppContext()
   const [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
     if (isLoaded && !isSignedIn) router.push('/sign-in')
   }, [isLoaded, isSignedIn, router])
 
-  if (!isLoaded || !isSignedIn) {
+  useEffect(() => {
+    if (!loadingPillars && isSignedIn && pillars.length === 0) {
+      router.push('/onboarding/welcome')
+    }
+  }, [loadingPillars, isSignedIn, pillars.length, router])
+
+  // Show loading until auth + onboarding check both resolve
+  if (!isLoaded || !isSignedIn || loadingPillars || pillars.length === 0) {
     return (
       <div className="flex items-center justify-center h-screen bg-white dark:bg-[#0F172A]">
         <motion.div
