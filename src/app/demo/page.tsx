@@ -772,14 +772,14 @@ function SettingsIllustration() {
                   transition={{ duration: 0.6 }}
                   className="text-[10px] font-semibold"
                 >
-                  Eyoel
+                  John Doe
                 </motion.p>
                 <motion.p
                   animate={{ color: dark ? '#475569' : '#94A3B8' }}
                   transition={{ duration: 0.6 }}
                   className="text-[9px]"
                 >
-                  eyum2024@gmail.com
+                  johndoe@gmail.com
                 </motion.p>
               </div>
             </div>
@@ -968,8 +968,8 @@ function ReadyIllustration() {
                   <span className="text-white text-[8px] font-bold">E</span>
                 </div>
                 <div>
-                  <p className="text-[8px] font-semibold text-[#0F172A]">Eyoel</p>
-                  <p className="text-[7px] text-[#94A3B8]">eyum2024@gmail.com</p>
+                  <p className="text-[8px] font-semibold text-[#0F172A]">John Doe</p>
+                  <p className="text-[7px] text-[#94A3B8]">johndoe@gmail.com</p>
                 </div>
               </div>
               <div className="flex gap-1">
