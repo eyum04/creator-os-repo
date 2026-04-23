@@ -7,7 +7,7 @@ CreatorOS is a SaaS app for aspiring TikTok creators. It helps users capture vid
 - Framework: Next.js 14 with App Router
 - Database: Supabase with Row Level Security on every table
 - Auth: Clerk
-- Payments: Stripe
+- Payments: Stripe (planned for v2)
 - Styling: Tailwind CSS
 - Animations: Framer Motion
 - AI: Anthropic API using claude-sonnet-4-20250514
@@ -47,7 +47,7 @@ Free tier limits must be enforced at the database level, not just the UI.
 3. Capture-to-post pipeline — kanban with 4 stages: Idea, Scripted, Filmed, Posted
 4. Shot list builder — manual and AI-generated (Pro)
 5. Content calendar — monthly view, color coded by pillar
-6. AI creative assistant — Pro only, context-aware chat with style inspiration board
+6. AI creative assistant — Pro only, context-aware chat with style inspiration board (planned for v2)
 
 ## Database tables
 - users (id, email, name, plan_tier, stripe_customer_id)
