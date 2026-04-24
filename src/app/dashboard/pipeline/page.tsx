@@ -8,6 +8,7 @@ import { useSupabaseClient } from '@/lib/supabase'
 import { useAppContext } from '../_context'
 import { AddIdeaModal } from '@/components/modals/AddIdeaModal'
 import { ConfirmDeleteModal } from '@/components/modals/ConfirmDeleteModal'
+import { CelebrationModal } from '@/components/modals/CelebrationModal'
 import { PillarBadge } from '@/components/ui/PillarBadge'
 import { StageBadge } from '@/components/ui/StageBadge'
 import { FreeTierBanner } from '@/components/ui/FreeTierBanner'
@@ -140,6 +141,7 @@ export default function PipelinePage() {
   const [loading, setLoading] = useState(true)
   const [showAdd, setShowAdd] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<IdeaWithPillar | null>(null)
+  const [showCelebration, setShowCelebration] = useState(false)
   const [activeTab, setActiveTab] = useState<IdeaStage>('Idea')
   const [shotStats, setShotStats] = useState<Record<string, { total: number; completed: number }>>({})
 
@@ -195,6 +197,7 @@ export default function PipelinePage() {
   const handleStageChange = async (id: string, stage: IdeaStage) => {
     setIdeas(prev => prev.map(i => i.id === id ? { ...i, stage } : i))
     await supabase.from('ideas').update({ stage }).eq('id', id).eq('user_id', user!.id)
+    if (stage === 'Posted') setShowCelebration(true)
   }
 
   const handleDelete = async () => {
@@ -334,6 +337,9 @@ export default function PipelinePage() {
           onConfirm={handleDelete}
           onClose={() => setDeleteTarget(null)}
         />
+      )}
+      {showCelebration && (
+        <CelebrationModal onClose={() => setShowCelebration(false)} />
       )}
     </div>
   )

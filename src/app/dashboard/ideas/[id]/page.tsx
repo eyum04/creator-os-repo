@@ -10,6 +10,7 @@ import { PillarBadge } from '@/components/ui/PillarBadge'
 import { FocusInput } from '@/components/ui/FocusInput'
 import { ShimmerButton } from '@/components/ui/ShimmerButton'
 import { STAGES, STAGE_COLORS, type IdeaWithPillar, type Shot } from '@/lib/types'
+import { CelebrationModal } from '@/components/modals/CelebrationModal'
 
 const spring = { type: 'spring' as const, stiffness: 100, damping: 20 }
 
@@ -34,6 +35,7 @@ export default function IdeaDetailPage({ params }: { params: Promise<{ id: strin
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
+  const [showCelebration, setShowCelebration] = useState(false)
 
   // Shot list
   const [newShot, setNewShot] = useState('')
@@ -101,6 +103,7 @@ export default function IdeaDetailPage({ params }: { params: Promise<{ id: strin
     setSaving(false)
     setSaved(true)
     setTimeout(() => setSaved(false), 2500)
+    if (saved.stage === 'Posted') setShowCelebration(true)
   }
 
   const handleToggleShot = async (shotId: string, completed: boolean) => {
@@ -392,6 +395,9 @@ export default function IdeaDetailPage({ params }: { params: Promise<{ id: strin
           </div>
         </motion.div>
       </div>
+      {showCelebration && (
+        <CelebrationModal onClose={() => setShowCelebration(false)} />
+      )}
     </div>
   )
 }
