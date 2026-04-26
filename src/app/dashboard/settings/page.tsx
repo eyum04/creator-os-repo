@@ -41,19 +41,39 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
 
+  const [reminderDays, setReminderDays] = useState<number[]>([1])
+  const [reminderSaving, setReminderSaving] = useState(false)
+  const [reminderSaved, setReminderSaved] = useState(false)
+
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
     if (!user) return
-    supabase.from('users').select('name').eq('id', user.id).single()
+    supabase.from('users').select('name, reminder_days').eq('id', user.id).single()
       .then(({ data }) => {
         if (data?.name) {
           setCreatorName(data.name)
           setEditName(data.name)
         }
+        if (data?.reminder_days) setReminderDays(data.reminder_days)
       })
   }, [user]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleSaveReminders = async () => {
+    if (!user) return
+    setReminderSaving(true)
+    await supabase.from('users').update({ reminder_days: reminderDays }).eq('id', user.id)
+    setReminderSaving(false)
+    setReminderSaved(true)
+    setTimeout(() => setReminderSaved(false), 2000)
+  }
+
+  const toggleReminderDay = (day: number) => {
+    setReminderDays(prev =>
+      prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day]
+    )
+  }
 
   const handleSaveName = async () => {
     if (!user || !editName.trim()) return
@@ -139,6 +159,46 @@ export default function SettingsPage() {
               </ShimmerButton>
             </div>
           </div>
+        </motion.div>
+
+        {/* Reminders card */}
+        <motion.div variants={item} className="bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] rounded-2xl p-6 mb-4">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#64748B] dark:text-[#94A3B8] mb-1">Reminders</p>
+          <p className="text-[13px] text-[#94A3B8] mb-5">Get an email reminder before your scheduled post date. Set it once — applies to all your ideas.</p>
+          <div className="space-y-3 mb-5">
+            {[
+              { label: '7 days before', day: 7 },
+              { label: '3 days before', day: 3 },
+              { label: '1 day before', day: 1 },
+              { label: 'Day of posting', day: 0 },
+            ].map(({ label, day }) => (
+              <label key={day} className="flex items-center gap-3 cursor-pointer group">
+                <div
+                  onClick={() => toggleReminderDay(day)}
+                  className={[
+                    'w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all duration-150',
+                    reminderDays.includes(day)
+                      ? 'bg-[#2563EB] border-[#2563EB]'
+                      : 'border-[#CBD5E1] dark:border-[#475569] hover:border-[#2563EB]',
+                  ].join(' ')}
+                >
+                  {reminderDays.includes(day) && (
+                    <svg viewBox="0 0 12 12" fill="none" className="w-3 h-3">
+                      <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </div>
+                <span className="text-[14px] text-[#0F172A] dark:text-white group-hover:text-[#2563EB] transition-colors duration-150">{label}</span>
+              </label>
+            ))}
+          </div>
+          <ShimmerButton
+            onClick={handleSaveReminders}
+            disabled={reminderSaving}
+            className="py-3 px-5 text-[14px]"
+          >
+            {reminderSaving ? 'Saving…' : reminderSaved ? 'Saved ✓' : 'Save reminders'}
+          </ShimmerButton>
         </motion.div>
 
         {/* Appearance card */}
