@@ -2,8 +2,6 @@ import { NextRequest } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 const STAGE_MESSAGES: Record<string, string> = {
   Idea: "You haven't written your script yet. Start today.",
   Scripted: "Script done — it's time to film.",
@@ -31,6 +29,8 @@ export async function GET(request: NextRequest) {
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 })
   }
+
+  const resend = new Resend(process.env.RESEND_API_KEY)
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
