@@ -129,12 +129,10 @@ export function AddIdeaModal({ pillars, ideaCount, onAdd, onClose }: Props) {
                 onChange={e => setScheduledDate(e.target.value)}
                 className="w-full px-4 py-3 bg-white border border-[#E2E8F0] dark:border-[#475569] rounded-xl text-[#0F172A] text-[14px] focus:outline-none focus:border-[#2563EB] transition-colors duration-150"
               />
-              {scheduledDate && (
-                <p className="text-[12px] text-[#94A3B8] mt-1.5">
-                  🔔 Reminders configured in{' '}
-                  <a href="/dashboard/settings" className="text-[#2563EB] hover:text-[#1D4ED8] font-medium">Settings →</a>
-                </p>
-              )}
+              <p className="text-[12px] text-[#94A3B8] mt-1.5">
+                🔔 Reminders configured in{' '}
+                <a href="/dashboard/settings" className="text-[#2563EB] hover:text-[#1D4ED8] font-medium">Settings →</a>
+              </p>
             </div>
 
             <div className="flex gap-3 pt-2">
