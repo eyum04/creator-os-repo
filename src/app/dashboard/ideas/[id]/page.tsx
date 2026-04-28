@@ -202,7 +202,7 @@ export default function IdeaDetailPage({ params }: { params: Promise<{ id: strin
           ) : (
             <h1
               onClick={() => setEditingTitle(true)}
-              className="text-[24px] font-bold text-[#0F172A] tracking-tight mb-6 cursor-text hover:bg-[#F8F9FA] rounded-xl px-2 py-1 -mx-2 transition-colors duration-150 group"
+              className="text-[24px] font-bold text-[#0F172A] dark:text-white tracking-tight mb-6 cursor-text hover:bg-[#F8F9FA] dark:hover:bg-[#1E293B] rounded-xl px-2 py-1 -mx-2 transition-colors duration-150 group"
             >
               {title}
               <span className="ml-2 text-[14px] text-[#CBD5E1] font-normal opacity-0 group-hover:opacity-100 transition-opacity duration-150">edit</span>
