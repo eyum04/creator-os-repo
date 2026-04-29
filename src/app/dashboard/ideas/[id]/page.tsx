@@ -11,6 +11,7 @@ import { FocusInput } from '@/components/ui/FocusInput'
 import { ShimmerButton } from '@/components/ui/ShimmerButton'
 import { STAGES, STAGE_COLORS, type IdeaWithPillar, type Shot } from '@/lib/types'
 import { CelebrationModal } from '@/components/modals/CelebrationModal'
+import { ShootingStars } from '@/components/ui/ShootingStars'
 
 const spring = { type: 'spring' as const, stiffness: 100, damping: 20 }
 
@@ -36,7 +37,7 @@ export default function IdeaDetailPage({ params }: { params: Promise<{ id: strin
   const [saved, setSaved] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [showCelebration, setShowCelebration] = useState(false)
-
+  const [showStars, setShowStars] = useState(false)
   // Shot list
   const [newShot, setNewShot] = useState('')
   const [addingShot, setAddingShot] = useState(false)
@@ -69,6 +70,9 @@ export default function IdeaDetailPage({ params }: { params: Promise<{ id: strin
     setSaving(true)
     setSaveError(null)
 
+    const isNewPost = stage === 'Posted' && idea.stage !== 'Posted'
+    const now = new Date().toISOString()
+
     const { data: saved, error } = await supabase
       .from('ideas')
       .update({
@@ -76,9 +80,10 @@ export default function IdeaDetailPage({ params }: { params: Promise<{ id: strin
         stage,
         script: script || null,
         scheduled_date: scheduledDate || null,
+        ...(isNewPost ? { posted_at: now } : {}),
       })
       .eq('id', id)
-      .select('id, title, stage, script, scheduled_date')
+      .select('id, title, stage, script, scheduled_date, posted_at')
       .single()
 
     if (error) {
@@ -100,9 +105,12 @@ export default function IdeaDetailPage({ params }: { params: Promise<{ id: strin
 
     const pillar = pillars.find(p => p.id === idea.pillar_id) ?? null
     setIdea(prev => prev ? { ...prev, ...saved, pillar } : prev)
+    const isForward = STAGES.indexOf(saved.stage) > STAGES.indexOf(idea.stage)
     setSaving(false)
     setSaved(true)
     setTimeout(() => setSaved(false), 2500)
+
+    if (isForward) setShowStars(true)
     if (saved.stage === 'Posted') setShowCelebration(true)
   }
 
@@ -395,9 +403,8 @@ export default function IdeaDetailPage({ params }: { params: Promise<{ id: strin
           </div>
         </motion.div>
       </div>
-      {showCelebration && (
-        <CelebrationModal onClose={() => setShowCelebration(false)} />
-      )}
+      {showCelebration && <CelebrationModal onClose={() => setShowCelebration(false)} />}
+      {showStars && <ShootingStars onComplete={() => setShowStars(false)} />}
     </div>
   )
 }

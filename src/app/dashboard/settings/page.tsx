@@ -233,6 +233,38 @@ export default function SettingsPage() {
           </div>
         </motion.div>
 
+        {/* Trophy system card */}
+        <motion.div variants={item} className="bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] rounded-2xl p-6 mb-4">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#64748B] dark:text-[#94A3B8] mb-1">Consistency Trophies</p>
+          <p className="text-[13px] text-[#94A3B8] mb-5">
+            Trophies are earned by posting consistently each week. Marking an idea as <span className="font-semibold text-[#10B981]">Posted</span> counts — but this is on you. Only mark it posted if you actually uploaded it. That&apos;s the whole point.
+          </p>
+
+          <div className="space-y-3">
+            {[
+              { emoji: '🥉', label: 'Bronze', color: '#CD7F32', rule: '1+ post/week', weeks: '1 week', desc: 'Post at least once last week.' },
+              { emoji: '🥈', label: 'Silver', color: '#94A3B8', rule: '2+ posts/week', weeks: '2 weeks in a row', desc: 'Post at least twice a week, two consecutive weeks.' },
+              { emoji: '🏆', label: 'Gold',   color: '#FBBF24', rule: '3+ posts/week', weeks: '2 weeks in a row', desc: 'Post at least 3 times a week, two consecutive weeks.' },
+              { emoji: '👑', label: 'Legend', color: '#A855F7', rule: '3+ posts/week', weeks: '4 weeks in a row', desc: 'Sustain 3+ posts a week for a full month.' },
+            ].map(tier => (
+              <div key={tier.label} className="flex items-start gap-3 p-3 bg-[#F8F9FA] dark:bg-[#0F172A] rounded-xl">
+                <span className="text-2xl flex-shrink-0 mt-0.5">{tier.emoji}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <span className="text-[14px] font-bold" style={{ color: tier.color }}>{tier.label}</span>
+                    <span className="text-[11px] font-semibold text-[#94A3B8] bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] px-2 py-0.5 rounded-full">{tier.rule} · {tier.weeks}</span>
+                  </div>
+                  <p className="text-[12px] text-[#64748B] dark:text-[#94A3B8]">{tier.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-4 p-3 bg-[#FEF3C7] dark:bg-[#451a03] border border-[#FDE68A] dark:border-[#92400e] rounded-xl">
+            <p className="text-[12px] font-semibold text-[#92400E] dark:text-[#FCD34D]">⚠️ Trophies reset if you miss your weekly target — stay consistent to keep your streak!</p>
+          </div>
+        </motion.div>
+
         {/* Plan card */}
         <motion.div variants={item} className="bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] rounded-2xl p-6 mb-4">
           <p className="text-xs font-semibold uppercase tracking-widest text-[#64748B] dark:text-[#94A3B8] mb-4">Plan</p>

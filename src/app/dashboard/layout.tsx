@@ -93,10 +93,10 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
   return (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className="flex items-center gap-2.5 px-5 pt-5 pb-6">
+      <Link href="/dashboard" className="flex items-center gap-2.5 px-5 pt-5 pb-6 hover:opacity-80 transition-opacity duration-150">
         <LogoMark size={26} />
         <span className="font-bold text-[#0F172A] dark:text-white text-[16px] tracking-tight">CreatorOS</span>
-      </div>
+      </Link>
 
       {/* Nav */}
       <nav className="px-3 space-y-0.5 flex-shrink-0">
@@ -275,10 +275,10 @@ function Shell({ children }: { children: React.ReactNode }) {
                 <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
               </svg>
             </button>
-            <div className="flex items-center gap-2 md:hidden">
+            <Link href="/dashboard" className="flex items-center gap-2 md:hidden hover:opacity-80 transition-opacity duration-150">
               <LogoMark size={22} />
               <span className="font-bold text-[#0F172A] dark:text-white text-[15px]">CreatorOS</span>
-            </div>
+            </Link>
           </div>
 
           {/* Right: logout button */}

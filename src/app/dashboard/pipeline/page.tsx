@@ -9,10 +9,13 @@ import { useAppContext } from '../_context'
 import { AddIdeaModal } from '@/components/modals/AddIdeaModal'
 import { ConfirmDeleteModal } from '@/components/modals/ConfirmDeleteModal'
 import { CelebrationModal } from '@/components/modals/CelebrationModal'
+import { ShootingStars } from '@/components/ui/ShootingStars'
 import { PillarBadge } from '@/components/ui/PillarBadge'
 import { StageBadge } from '@/components/ui/StageBadge'
 import { FreeTierBanner } from '@/components/ui/FreeTierBanner'
-import { STAGES, STAGE_COLORS, FREE_TIER_LIMITS, type IdeaStage, type IdeaWithPillar } from '@/lib/types'
+import { STAGES, STAGE_COLORS, FREE_TIER_LIMITS, type IdeaStage, type IdeaWithPillar, type TrophyLevel } from '@/lib/types'
+import { computeTrophy } from '@/lib/trophy'
+import { LevelUpModal } from '@/components/modals/LevelUpModal'
 
 const spring = { type: 'spring' as const, stiffness: 100, damping: 20 }
 
@@ -142,6 +145,9 @@ export default function PipelinePage() {
   const [showAdd, setShowAdd] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<IdeaWithPillar | null>(null)
   const [showCelebration, setShowCelebration] = useState(false)
+  const [showStars, setShowStars] = useState(false)
+  const [showLevelUp, setShowLevelUp] = useState(false)
+  const [levelUpTier, setLevelUpTier] = useState<TrophyLevel | null>(null)
   const [activeTab, setActiveTab] = useState<IdeaStage>('Idea')
   const [shotStats, setShotStats] = useState<Record<string, { total: number; completed: number }>>({})
 
@@ -195,8 +201,29 @@ export default function PipelinePage() {
   }
 
   const handleStageChange = async (id: string, stage: IdeaStage) => {
-    setIdeas(prev => prev.map(i => i.id === id ? { ...i, stage } : i))
-    await supabase.from('ideas').update({ stage }).eq('id', id).eq('user_id', user!.id)
+    const current = ideas.find(i => i.id === id)
+    const isForward = current ? STAGES.indexOf(stage) > STAGES.indexOf(current.stage) : false
+    const isNewPost = stage === 'Posted' && current?.stage !== 'Posted'
+
+    const now = new Date().toISOString()
+    const update: Record<string, unknown> = { stage }
+    if (isNewPost) update.posted_at = now
+
+    setIdeas(prev => prev.map(i => i.id === id ? { ...i, stage, ...(isNewPost ? { posted_at: now } : {}) } : i))
+    await supabase.from('ideas').update(update).eq('id', id).eq('user_id', user!.id)
+
+    if (isNewPost) {
+      const updatedIdeas = ideas.map(i => i.id === id ? { ...i, posted_at: now } : i)
+      const newTrophy = computeTrophy(updatedIdeas)
+      const lastLevel = typeof window !== 'undefined' ? localStorage.getItem('creatoros_trophy_level') : null
+      if (newTrophy.level && newTrophy.level !== lastLevel) {
+        localStorage.setItem('creatoros_trophy_level', newTrophy.level)
+        setLevelUpTier(newTrophy.level)
+        setShowLevelUp(true)
+      }
+    }
+
+    if (isForward) setShowStars(true)
     if (stage === 'Posted') setShowCelebration(true)
   }
 
@@ -340,6 +367,12 @@ export default function PipelinePage() {
       )}
       {showCelebration && (
         <CelebrationModal onClose={() => setShowCelebration(false)} />
+      )}
+      {showStars && (
+        <ShootingStars onComplete={() => setShowStars(false)} />
+      )}
+      {showLevelUp && levelUpTier && (
+        <LevelUpModal level={levelUpTier} onClose={() => setShowLevelUp(false)} />
       )}
     </div>
   )

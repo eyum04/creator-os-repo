@@ -9,7 +9,57 @@ import { useSupabaseClient } from '@/lib/supabase'
 import { useAppContext } from './_context'
 import { PillarBadge } from '@/components/ui/PillarBadge'
 import { StageBadge } from '@/components/ui/StageBadge'
-import { STAGE_COLORS, type IdeaWithPillar } from '@/lib/types'
+import { STAGE_COLORS, TROPHY_CONFIG, type IdeaWithPillar, type TrophyLevel } from '@/lib/types'
+import { computeTrophy, type TrophyResult } from '@/lib/trophy'
+import { LevelUpModal } from '@/components/modals/LevelUpModal'
+
+const NEXT_TIER: Record<TrophyLevel, TrophyLevel | null> = {
+  Bronze: 'Silver', Silver: 'Gold', Gold: 'Legend', Legend: null,
+}
+
+function TrophyCard({ result }: { result: TrophyResult }) {
+  const cfg = result.level ? TROPHY_CONFIG[result.level] : null
+  const nextTier = result.level ? NEXT_TIER[result.level] : 'Bronze'
+  const targetPerWeek = nextTier ? TROPHY_CONFIG[nextTier].minPostsPerWeek : (cfg?.minPostsPerWeek ?? 1)
+  const progress = Math.min(result.postsThisWeek / targetPerWeek, 1)
+
+  return (
+    <div className="flex items-center gap-5">
+      {/* Trophy emoji */}
+      <div
+        className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0"
+        style={{ background: cfg ? `${cfg.glowColor}` : '#F1F5F9' }}
+      >
+        {cfg ? cfg.emoji : '🏅'}
+      </div>
+
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between mb-1">
+          <p className="font-bold text-[15px] text-[#0F172A]" style={cfg ? { color: cfg.color } : {}}>
+            {cfg ? cfg.label : 'No trophy yet'}
+          </p>
+          {result.streakWeeks > 0 && (
+            <span className="text-[12px] font-semibold text-[#64748B]">{result.streakWeeks} week streak 🔥</span>
+          )}
+        </div>
+        <p className="text-[12px] text-[#94A3B8] mb-2">
+          {result.postsThisWeek}/{targetPerWeek} posts this week
+          {nextTier ? ` → toward ${nextTier}` : ' — maintain your streak'}
+        </p>
+        {/* Progress bar */}
+        <div className="h-1.5 bg-[#E2E8F0] rounded-full overflow-hidden">
+          <div
+            className="h-full rounded-full transition-all duration-500"
+            style={{
+              width: `${progress * 100}%`,
+              background: cfg ? cfg.color : '#2563EB',
+            }}
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
 
 const spring = { type: 'spring' as const, stiffness: 100, damping: 20 }
 const container = { hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }
@@ -124,6 +174,9 @@ export default function DashboardPage() {
   const [calendarIdeas, setCalendarIdeas] = useState<IdeaWithPillar[]>([])
   const [ideasLoading, setIdeasLoading] = useState(true)
   const [creatorName, setCreatorName] = useState('')
+  const [trophyResult, setTrophyResult] = useState<TrophyResult | null>(null)
+  const [showLevelUp, setShowLevelUp] = useState(false)
+  const [levelUpTier, setLevelUpTier] = useState<TrophyLevel | null>(null)
 
   useEffect(() => {
     if (!loadingPillars && pillars.length === 0 && user) {
@@ -176,6 +229,29 @@ export default function DashboardPage() {
 
   useEffect(() => { fetchCalendarIdeas() }, [fetchCalendarIdeas, pathname])
 
+  // Trophy computation with level-up detection
+  useEffect(() => {
+    if (!user) return
+    supabase
+      .from('ideas')
+      .select('posted_at')
+      .eq('user_id', user.id)
+      .not('posted_at', 'is', null)
+      .then(({ data }) => {
+        if (!data) return
+        const result = computeTrophy(data as { posted_at: string | null }[])
+        setTrophyResult(result)
+        const lastLevel = localStorage.getItem('creatoros_trophy_level') ?? ''
+        if (result.level && result.level !== lastLevel) {
+          localStorage.setItem('creatoros_trophy_level', result.level)
+          setLevelUpTier(result.level)
+          setShowLevelUp(true)
+        } else if (!result.level) {
+          localStorage.removeItem('creatoros_trophy_level')
+        }
+      })
+  }, [user]) // eslint-disable-line react-hooks/exhaustive-deps
+
   const displayName = creatorName || user?.firstName || ''
   const loading = loadingPillars || ideasLoading
 
@@ -194,6 +270,7 @@ export default function DashboardPage() {
   }
 
   return (
+    <>
     <motion.div
       initial="hidden"
       animate="visible"
@@ -226,6 +303,17 @@ export default function DashboardPage() {
           </motion.div>
         ))}
       </div>
+
+      {/* Trophy card */}
+      {trophyResult && (
+        <motion.div variants={item} className="bg-[#F8F9FA] border border-[#E2E8F0] rounded-2xl p-5 mb-6">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#64748B] mb-4">Consistency Trophy</p>
+          <TrophyCard result={trophyResult} />
+          <Link href="/dashboard/settings" className="block mt-4 text-[12px] text-[#2563EB] hover:text-[#1D4ED8] font-medium transition-colors duration-150">
+            How trophies work →
+          </Link>
+        </motion.div>
+      )}
 
       {/* Mini calendar */}
       <motion.div variants={item} className="bg-[#F8F9FA] border border-[#E2E8F0] rounded-2xl p-5 mb-6">
@@ -289,5 +377,10 @@ export default function DashboardPage() {
         )}
       </motion.div>
     </motion.div>
+
+    {showLevelUp && levelUpTier && (
+      <LevelUpModal level={levelUpTier} onClose={() => setShowLevelUp(false)} />
+    )}
+    </>
   )
 }
