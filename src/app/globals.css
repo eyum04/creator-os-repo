@@ -20,6 +20,21 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* ── iOS / PWA touch fixes ───────────────────────────────────────────────────
+   Removes the gray flash on tap, kills the 300ms delay on buttons/links,
+   and enables momentum scrolling in overflow containers.                     */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, a {
+  touch-action: manipulation;
+}
+
+.overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
 /* Blue canvas — breathing aurora through the blue family */
 @keyframes blueShift {
   0%, 100% { background-position: 0% 50%; }

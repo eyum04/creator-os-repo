@@ -2,7 +2,7 @@
 
 import { useAuth, useUser, useClerk } from '@clerk/nextjs'
 import { useRouter, usePathname } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { LogoMark } from '@/components/ui/LogoMark'
@@ -200,8 +200,10 @@ function Shell({ children }: { children: React.ReactNode }) {
   const { isSignedIn, isLoaded } = useAuth()
   const { signOut } = useClerk()
   const router = useRouter()
+  const pathname = usePathname()
   const { pillars, loadingPillars } = useAppContext()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const mainRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     if (isLoaded && !isSignedIn) router.push('/sign-in')
@@ -213,7 +215,25 @@ function Shell({ children }: { children: React.ReactNode }) {
     }
   }, [loadingPillars, isSignedIn, pillars.length, router])
 
-  // Show loading until auth + onboarding check both resolve
+  // Scroll main to top on every route change — resets iOS touch context so
+  // the first swipe after navigation goes straight to scrolling, not "activating"
+  useEffect(() => {
+    mainRef.current?.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
+    setMobileOpen(false)
+  }, [pathname])
+
+  // Prefetch all nav routes so tapping a link is instant
+  useEffect(() => {
+    ;[
+      '/dashboard',
+      '/dashboard/pipeline',
+      '/dashboard/pillars',
+      '/dashboard/calendar',
+      '/dashboard/shots',
+      '/dashboard/settings',
+    ].forEach(r => router.prefetch(r))
+  }, [router])
+
   if (!isLoaded || !isSignedIn || loadingPillars || pillars.length === 0) {
     return (
       <div className="flex items-center justify-center h-screen bg-white dark:bg-[#0F172A]">
@@ -237,27 +257,27 @@ function Shell({ children }: { children: React.ReactNode }) {
         <SidebarContent />
       </aside>
 
-      {/* Mobile sidebar overlay */}
+      {/* Mobile: backdrop is a plain div — vanishes instantly when mobileOpen is false
+          so it never blocks touches on the main content during a sidebar exit animation */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/30 z-40 md:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      {/* Mobile sidebar — keeps its slide animation independently */}
       <AnimatePresence>
         {mobileOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/30 z-40 md:hidden"
-              onClick={() => setMobileOpen(false)}
-            />
-            <motion.aside
-              initial={{ x: -240 }}
-              animate={{ x: 0 }}
-              exit={{ x: -240 }}
-              transition={spring}
-              className="fixed left-0 top-0 h-full w-[240px] bg-[#F8F9FA] dark:bg-[#1E293B] border-r border-[#E2E8F0] dark:border-[#334155] z-50 md:hidden"
-            >
-              <SidebarContent onClose={() => setMobileOpen(false)} />
-            </motion.aside>
-          </>
+          <motion.aside
+            initial={{ x: -240 }}
+            animate={{ x: 0 }}
+            exit={{ x: -240 }}
+            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed left-0 top-0 h-full w-[240px] bg-[#F8F9FA] dark:bg-[#1E293B] border-r border-[#E2E8F0] dark:border-[#334155] z-50 md:hidden"
+          >
+            <SidebarContent onClose={() => setMobileOpen(false)} />
+          </motion.aside>
         )}
       </AnimatePresence>
 
@@ -265,7 +285,6 @@ function Shell({ children }: { children: React.ReactNode }) {
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top bar */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-[#E2E8F0] dark:border-[#334155] flex-shrink-0">
-          {/* Left: hamburger on mobile */}
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileOpen(true)}
@@ -281,7 +300,6 @@ function Shell({ children }: { children: React.ReactNode }) {
             </Link>
           </div>
 
-          {/* Right: logout button */}
           <button
             onClick={handleLogout}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[13px] font-medium text-[#64748B] dark:text-[#94A3B8] hover:text-[#EF4444] hover:bg-[#FEF2F2] dark:hover:bg-[#450a0a] border border-[#E2E8F0] dark:border-[#334155] hover:border-[#FECACA] transition-colors duration-150"
@@ -291,8 +309,8 @@ function Shell({ children }: { children: React.ReactNode }) {
           </button>
         </div>
 
-        {/* Page content */}
-        <main className="flex-1 overflow-y-auto">
+        {/* Page content — ref lets us reset scroll on route change */}
+        <main ref={mainRef} className="flex-1 overflow-y-auto overscroll-none">
           {children}
         </main>
       </div>
