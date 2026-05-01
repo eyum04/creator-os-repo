@@ -127,7 +127,7 @@ export function AddIdeaModal({ pillars, ideaCount, onAdd, onClose }: Props) {
                 type="date"
                 value={scheduledDate}
                 onChange={e => setScheduledDate(e.target.value)}
-                className="w-full px-4 py-3 bg-white border border-[#E2E8F0] dark:border-[#475569] rounded-xl text-[#0F172A] text-[14px] focus:outline-none focus:border-[#2563EB] transition-colors duration-150"
+                className="w-full px-4 py-3.5 bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#475569] rounded-xl text-[#0F172A] dark:text-white text-[15px] focus:outline-none focus:border-[#2563EB] transition-colors duration-150 appearance-none"
               />
               <p className="text-[12px] text-[#94A3B8] mt-1.5">
                 🔔 Reminders configured in{' '}
