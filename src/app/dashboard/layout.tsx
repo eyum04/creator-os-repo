@@ -108,7 +108,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
               href={href}
               onClick={onClose}
               className={[
-                'flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[14px] font-medium transition-all duration-150',
+                'flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[14px] font-medium transition-colors duration-150',
                 active
                   ? 'bg-[#2563EB] text-white'
                   : 'text-[#64748B] dark:text-[#94A3B8] hover:bg-[#F1F5F9] dark:hover:bg-[#334155] hover:text-[#0F172A] dark:hover:text-white',
@@ -143,7 +143,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
           href="/dashboard/settings"
           onClick={onClose}
           className={[
-            'flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[14px] font-medium transition-all duration-150',
+            'flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[14px] font-medium transition-colors duration-150',
             isActive('/dashboard/settings', false)
               ? 'bg-[#2563EB] text-white'
               : 'text-[#64748B] dark:text-[#94A3B8] hover:bg-[#F1F5F9] dark:hover:bg-[#334155] hover:text-[#0F172A] dark:hover:text-white',
@@ -284,7 +284,7 @@ function Shell({ children }: { children: React.ReactNode }) {
           {/* Right: logout button */}
           <button
             onClick={handleLogout}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[13px] font-medium text-[#64748B] dark:text-[#94A3B8] hover:text-[#EF4444] hover:bg-[#FEF2F2] dark:hover:bg-[#450a0a] border border-[#E2E8F0] dark:border-[#334155] hover:border-[#FECACA] transition-all duration-150"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[13px] font-medium text-[#64748B] dark:text-[#94A3B8] hover:text-[#EF4444] hover:bg-[#FEF2F2] dark:hover:bg-[#450a0a] border border-[#E2E8F0] dark:border-[#334155] hover:border-[#FECACA] transition-colors duration-150"
           >
             <LogoutIcon />
             Log out
