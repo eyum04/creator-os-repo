@@ -2,12 +2,13 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { motion, useInView, useScroll, useTransform, AnimatePresence } from 'framer-motion'
+import { motion, useInView, AnimatePresence } from 'framer-motion'
 import { useAuth, useClerk } from '@clerk/nextjs'
 
-// ─── Spring presets ───────────────────────────────────────────────────────────
-const sp = { type: 'spring' as const, stiffness: 100, damping: 20 }
-const bouncy = { type: 'spring' as const, stiffness: 200, damping: 15 }
+// ─── Easing presets — expo-out runs on the CSS compositor, zero spring overhead
+const ease = [0.16, 1, 0.3, 1] as const
+const sp = { duration: 0.5, ease }
+const bouncy = { duration: 0.3, ease: [0.34, 1.56, 0.64, 1] as const }
 
 // ─── Palette ──────────────────────────────────────────────────────────────────
 const C = {
@@ -49,7 +50,7 @@ function Reveal({
   className?: string
 }) {
   const ref = useRef<HTMLDivElement>(null)
-  const inView = useInView(ref, { once: true, margin: '-70px 0px' })
+  const inView = useInView(ref, { once: true, margin: '0px 0px -20px 0px' })
   return (
     <motion.div
       ref={ref}
@@ -197,44 +198,31 @@ function WhiteButton({
 // ─── Floating background (cream shapes on blue) ───────────────────────────────
 
 function FloatingBackground() {
+  // CSS animations run on the compositor thread — zero JS frame cost
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-0" aria-hidden>
-      <motion.div
-        className="absolute w-[700px] h-[700px] rounded-full"
+      <div
+        className="absolute w-[700px] h-[700px] rounded-full lp-blob-1"
         style={{ background: 'rgba(255,255,255,0.08)', filter: 'blur(90px)', top: '-15%', left: '-8%' }}
-        animate={{ y: [0, 50, 0], x: [0, 20, 0] }}
-        transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
       />
-      <motion.div
-        className="absolute w-[550px] h-[550px] rounded-full"
+      <div
+        className="absolute w-[550px] h-[550px] rounded-full lp-blob-2"
         style={{ background: 'rgba(255,255,255,0.06)', filter: 'blur(80px)', top: '35%', right: '-10%' }}
-        animate={{ y: [0, -40, 0], x: [0, -18, 0] }}
-        transition={{ duration: 28, repeat: Infinity, ease: 'easeInOut' }}
       />
-      <motion.div
-        className="absolute w-[400px] h-[400px] rounded-full"
+      <div
+        className="absolute w-[400px] h-[400px] rounded-full lp-blob-3"
         style={{ background: 'rgba(244,225,218,0.12)', filter: 'blur(70px)', bottom: '5%', left: '25%' }}
-        animate={{ y: [0, 28, 0], x: [0, -14, 0] }}
-        transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
       />
-      {/* Small decorative dots */}
       {[
-        { top: '12%', left: '7%', d: 8 },
-        { top: '58%', right: '9%', d: 6 },
-        { top: '78%', left: '4%', d: 10 },
-        { top: '32%', left: '52%', d: 5 },
-      ].map(({ d, ...pos }, i) => (
-        <motion.div
+        { top: '12%', left: '7%', d: 8, dur: '8s', delay: '0s' },
+        { top: '58%', right: '9%', d: 6, dur: '10.5s', delay: '1.2s' },
+        { top: '78%', left: '4%', d: 10, dur: '13s', delay: '2.4s' },
+        { top: '32%', left: '52%', d: 5, dur: '15.5s', delay: '3.6s' },
+      ].map(({ d, dur, delay, ...pos }, i) => (
+        <div
           key={i}
-          className="absolute rounded-full"
-          style={{
-            width: d,
-            height: d,
-            background: 'rgba(255,255,255,0.25)',
-            ...pos,
-          }}
-          animate={{ y: [0, -14, 0], opacity: [0.3, 0.65, 0.3] }}
-          transition={{ duration: 8 + i * 2.5, repeat: Infinity, ease: 'easeInOut', delay: i * 1.2 }}
+          className="absolute rounded-full lp-dot"
+          style={{ width: d, height: d, background: 'rgba(255,255,255,0.25)', animationDuration: dur, animationDelay: delay, ...pos }}
         />
       ))}
     </div>
@@ -329,9 +317,9 @@ function HeroSection() {
           {darkWords.map((word, i) => (
             <motion.span
               key={`d-${i}`}
-              initial={{ opacity: 0, filter: 'blur(8px)', y: 12 }}
-              animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
-              transition={{ delay: 0.3 + i * 0.08, ...sp }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.08 + i * 0.04, ...sp }}
               className="inline-block mr-[0.28em]"
             >
               {word}
@@ -341,9 +329,9 @@ function HeroSection() {
           {accentWords.map((word, i) => (
             <motion.span
               key={`a-${i}`}
-              initial={{ opacity: 0, filter: 'blur(8px)', y: 12 }}
-              animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
-              transition={{ delay: 0.3 + (darkWords.length + i) * 0.08, ...sp }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.08 + (darkWords.length + i) * 0.04, ...sp }}
               className="inline-block mr-[0.28em] last:mr-0"
               style={{ color: C.blueAccent }}
             >
@@ -354,9 +342,9 @@ function HeroSection() {
 
         {/* Subline */}
         <motion.p
-          initial={{ opacity: 0, y: 18 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ ...sp, delay: 0.3 + totalWords * 0.08 + 0.1 }}
+          transition={{ ...sp, delay: 0.08 + totalWords * 0.04 + 0.06 }}
           className="text-[20px] leading-relaxed mb-10 max-w-2xl mx-auto"
           style={{ color: C.darkMid }}
         >
@@ -365,9 +353,9 @@ function HeroSection() {
 
         {/* CTAs */}
         <motion.div
-          initial={{ opacity: 0, y: 18 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ ...sp, delay: 0.3 + totalWords * 0.08 + 0.25 }}
+          transition={{ ...sp, delay: 0.08 + totalWords * 0.04 + 0.16 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10"
         >
           <DarkButton href="/sign-in" size="lg">
@@ -382,7 +370,7 @@ function HeroSection() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ ...sp, delay: 0.3 + totalWords * 0.08 + 0.45 }}
+          transition={{ ...sp, delay: 0.08 + totalWords * 0.04 + 0.28 }}
           className="flex items-center justify-center gap-2.5"
         >
           <div className="flex -space-x-2">
@@ -723,28 +711,16 @@ function DashboardMockup() {
 // ─── App preview section ──────────────────────────────────────────────────────
 
 function AppPreviewSection() {
-  const sectionRef = useRef<HTMLElement>(null)
   const mockupRef = useRef<HTMLDivElement>(null)
-  const inView = useInView(mockupRef, { once: true, margin: '0px 0px -40px 0px' })
-
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ['start end', 'end start'],
-  })
-  const parallaxY = useTransform(scrollYProgress, [0, 1], [16, -40])
+  const inView = useInView(mockupRef, { once: true, margin: '0px 0px -20px 0px' })
 
   return (
-    <section
-      ref={sectionRef}
-      className="canvas-bg relative z-10 px-6 pb-28"
-      style={{ marginTop: -2 }}
-    >
+    <section className="canvas-bg relative z-10 px-6 pb-28" style={{ marginTop: -2 }}>
       <div className="max-w-5xl mx-auto">
-        {/* Section hint */}
         <motion.p
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
-          transition={{ ...sp, delay: 0.6 }}
+          transition={{ ...sp, delay: 0.3 }}
           className="text-center text-[13px] font-medium mb-8"
           style={{ color: 'rgba(26,22,21,0.45)' }}
         >
@@ -752,25 +728,21 @@ function AppPreviewSection() {
         </motion.p>
 
         <div ref={mockupRef}>
-          {/* Outer entrance wrapper — opacity, scale, 3-D tilt */}
           <motion.div
             style={{ transformPerspective: 1400 }}
-            initial={{ opacity: 0, scale: 0.92, rotateX: 10 }}
+            initial={{ opacity: 0, scale: 0.93, rotateX: 8 }}
             animate={inView ? { opacity: 1, scale: 1, rotateX: 0 } : {}}
-            transition={{ type: 'spring', stiffness: 65, damping: 18, delay: 0.05 }}
+            transition={{ duration: 0.7, ease, delay: 0.05 }}
           >
-            {/* Inner scroll-parallax wrapper */}
-            <motion.div style={{ y: parallaxY }}>
-              <div
-                className="rounded-2xl overflow-hidden"
-                style={{
-                  boxShadow: '0 40px 120px rgba(26,22,21,0.28), 0 8px 24px rgba(26,22,21,0.12)',
-                  border: `1px solid rgba(255,255,255,0.6)`,
-                }}
-              >
-                <DashboardMockup />
-              </div>
-            </motion.div>
+            <div
+              className="rounded-2xl overflow-hidden"
+              style={{
+                boxShadow: '0 40px 120px rgba(26,22,21,0.28), 0 8px 24px rgba(26,22,21,0.12)',
+                border: `1px solid rgba(255,255,255,0.6)`,
+              }}
+            >
+              <DashboardMockup />
+            </div>
           </motion.div>
         </div>
       </div>
@@ -975,9 +947,7 @@ function WebPreviewMockup() {
 
 function DevicesSection() {
   const ref = useRef<HTMLDivElement>(null)
-  const inView = useInView(ref, { once: true, margin: '0px 0px -60px 0px' })
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
-  const parallaxY = useTransform(scrollYProgress, [0, 1], [20, -30])
+  const inView = useInView(ref, { once: true, margin: '0px 0px -20px 0px' })
 
   const [activeView, setActiveView] = useState<'mobile' | 'web'>('mobile')
 
@@ -1007,7 +977,7 @@ function DevicesSection() {
           transition={{ type: 'spring', stiffness: 65, damping: 18, delay: 0.15 }}
           style={{ perspective: 1200 }}
         >
-          <motion.div style={{ y: parallaxY }} className="relative flex justify-center">
+          <div className="relative flex justify-center">
             <AnimatePresence mode="wait">
               {activeView === 'mobile' ? (
                 <motion.div
@@ -1059,7 +1029,7 @@ function DevicesSection() {
                 </button>
               ))}
             </motion.div>
-          </motion.div>
+          </div>
         </motion.div>
       </div>
     </section>

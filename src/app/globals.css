@@ -35,6 +35,19 @@ button, a {
   -webkit-overflow-scrolling: touch;
 }
 
+/* ── Landing page blob animations — run on compositor, zero JS cost ──────────
+   Replaces Framer Motion animate on fixed blurred blobs which was causing
+   GPU thrashing and scroll jank on mobile.                                   */
+@keyframes lp-blob-1 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(20px,50px); } }
+@keyframes lp-blob-2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-18px,-40px); } }
+@keyframes lp-blob-3 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-14px,28px); } }
+@keyframes lp-dot    { 0%,100% { transform: translateY(0); opacity: 0.3; } 50% { transform: translateY(-14px); opacity: 0.65; } }
+
+.lp-blob-1 { animation: lp-blob-1 22s ease-in-out infinite; }
+.lp-blob-2 { animation: lp-blob-2 28s ease-in-out infinite; }
+.lp-blob-3 { animation: lp-blob-3 18s ease-in-out infinite; }
+.lp-dot    { animation: lp-dot    8s  ease-in-out infinite; }
+
 /* Blue canvas — breathing aurora through the blue family */
 @keyframes blueShift {
   0%, 100% { background-position: 0% 50%; }
