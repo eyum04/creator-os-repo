@@ -198,9 +198,10 @@ function WhiteButton({
 // ─── Floating background (cream shapes on blue) ───────────────────────────────
 
 function FloatingBackground() {
-  // CSS animations run on the compositor thread — zero JS frame cost
+  // CSS animations run on the compositor thread — zero JS frame cost.
+  // Hidden on mobile: fixed blur blobs force composite layers on every scroll repaint.
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0" aria-hidden>
+    <div className="hidden md:block fixed inset-0 pointer-events-none overflow-hidden z-0" aria-hidden>
       <div
         className="absolute w-[700px] h-[700px] rounded-full lp-blob-1"
         style={{ background: 'rgba(255,255,255,0.08)', filter: 'blur(90px)', top: '-15%', left: '-8%' }}
@@ -243,7 +244,7 @@ function Navbar() {
       transition={{ ...sp, delay: 0.1 }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? 'backdrop-blur-xl bg-[#9cc1e7]/80 border-b border-white/20 shadow-sm'
+          ? 'bg-[#9cc1e7] border-b border-white/30 shadow-sm'
           : 'bg-transparent'
       }`}
     >
@@ -712,7 +713,9 @@ function DashboardMockup() {
 
 function AppPreviewSection() {
   const mockupRef = useRef<HTMLDivElement>(null)
-  const inView = useInView(mockupRef, { once: true, margin: '0px 0px -20px 0px' })
+  // Positive bottom margin triggers 150px before the element enters the viewport
+  // so the animation completes before the user can see it starting
+  const inView = useInView(mockupRef, { once: true, margin: '0px 0px 150px 0px' })
 
   return (
     <section className="canvas-bg relative z-10 px-6 pb-28" style={{ marginTop: -2 }}>
@@ -729,10 +732,9 @@ function AppPreviewSection() {
 
         <div ref={mockupRef}>
           <motion.div
-            style={{ transformPerspective: 1400 }}
-            initial={{ opacity: 0, scale: 0.93, rotateX: 8 }}
-            animate={inView ? { opacity: 1, scale: 1, rotateX: 0 } : {}}
-            transition={{ duration: 0.7, ease, delay: 0.05 }}
+            initial={{ opacity: 0, y: 32 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, ease }}
           >
             <div
               className="rounded-2xl overflow-hidden"
@@ -947,7 +949,7 @@ function WebPreviewMockup() {
 
 function DevicesSection() {
   const ref = useRef<HTMLDivElement>(null)
-  const inView = useInView(ref, { once: true, margin: '0px 0px -20px 0px' })
+  const inView = useInView(ref, { once: true, margin: '0px 0px 100px 0px' })
 
   const [activeView, setActiveView] = useState<'mobile' | 'web'>('mobile')
 
@@ -972,10 +974,9 @@ function DevicesSection() {
 
         {/* Device display */}
         <motion.div
-          initial={{ opacity: 0, rotateX: 10, scale: 0.92 }}
-          animate={inView ? { opacity: 1, rotateX: 0, scale: 1 } : {}}
-          transition={{ type: 'spring', stiffness: 65, damping: 18, delay: 0.15 }}
-          style={{ perspective: 1200 }}
+          initial={{ opacity: 0, y: 28, scale: 0.97 }}
+          animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
+          transition={{ duration: 0.65, ease, delay: 0.1 }}
         >
           <div className="relative flex justify-center">
             <AnimatePresence mode="wait">
@@ -1122,7 +1123,7 @@ function TestimonialCard({ quote, name, role, color }: typeof TESTIMONIALS[0]) {
 
 function TestimonialsSection() {
   const ref = useRef<HTMLDivElement>(null)
-  const inView = useInView(ref, { once: true, margin: '0px 0px -60px 0px' })
+  const inView = useInView(ref, { once: true, margin: '0px 0px 80px 0px' })
 
   const row1 = TESTIMONIALS.slice(0, 4)
   const row2 = TESTIMONIALS.slice(4)
@@ -1220,7 +1221,7 @@ const PROBLEMS = [
 
 function ProblemSection() {
   const ref = useRef<HTMLDivElement>(null)
-  const inView = useInView(ref, { once: true, margin: '-60px 0px' })
+  const inView = useInView(ref, { once: true, margin: '0px 0px 80px 0px' })
 
   return (
     <section className="relative py-24 px-6 z-10" style={{ backgroundColor: C.cream }}>
@@ -1431,7 +1432,7 @@ const FEATURES = [
 
 function FeatureBlock({ feature, index }: { feature: typeof FEATURES[0]; index: number }) {
   const ref = useRef<HTMLDivElement>(null)
-  const inView = useInView(ref, { once: true, margin: '-60px 0px' })
+  const inView = useInView(ref, { once: true, margin: '0px 0px 80px 0px' })
   const isEven = index % 2 === 0
 
   return (
@@ -1529,7 +1530,7 @@ const STEPS = [
 
 function HowItWorksSection() {
   const ref = useRef<HTMLDivElement>(null)
-  const inView = useInView(ref, { once: true, margin: '-60px 0px' })
+  const inView = useInView(ref, { once: true, margin: '0px 0px 80px 0px' })
 
   return (
     <section id="how-it-works" className="canvas-bg relative py-28 px-6 z-10">

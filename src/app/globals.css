@@ -55,16 +55,18 @@ button, a {
 }
 
 .canvas-bg {
-  background: linear-gradient(
-    135deg,
-    #9cc1e7 0%,
-    #b4d0ee 20%,
-    #84b9ef 45%,
-    #aac8e9 70%,
-    #9cc1e7 100%
-  );
+  background: linear-gradient(135deg, #9cc1e7 0%, #b4d0ee 20%, #84b9ef 45%, #aac8e9 70%, #9cc1e7 100%);
   background-size: 350% 350%;
   animation: blueShift 20s ease infinite;
+}
+
+/* background-position animation is not GPU-accelerated — costs a full repaint
+   every frame. Disable on mobile so scrolling is smooth. Desktop keeps aurora. */
+@media (max-width: 767px) {
+  .canvas-bg {
+    animation: none;
+    background-size: 100%;
+  }
 }
 
 /* Dark section */
