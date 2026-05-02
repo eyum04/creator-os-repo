@@ -63,7 +63,7 @@ export default function WelcomePage() {
           transition={{ ...spring, delay: 0.25 + words.length * 0.08 + 0.12 }}
           className="text-[18px] text-[#64748B] leading-relaxed mb-12 max-w-xl mx-auto"
         >
-          Turn your TikTok dreams into a structured content machine with CreatorOS.
+          Turn your content dreams into a structured content machine with CreatorOS.
         </motion.p>
 
         {/* CTA */}
