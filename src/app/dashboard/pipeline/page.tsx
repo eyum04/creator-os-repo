@@ -17,8 +17,6 @@ import { STAGES, STAGE_COLORS, FREE_TIER_LIMITS, type IdeaStage, type IdeaWithPi
 import { computeTrophy } from '@/lib/trophy'
 import { LevelUpModal } from '@/components/modals/LevelUpModal'
 
-const spring = { type: 'spring' as const, stiffness: 100, damping: 20 }
-
 // ─── Idea card ────────────────────────────────────────────────────────────────
 
 function IdeaCard({
@@ -50,10 +48,10 @@ function IdeaCard({
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, y: 10, scale: 0.97 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95, y: -4 }}
-      transition={spring}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.15 }}
       className="bg-white border border-[#E2E8F0] rounded-xl p-3.5 cursor-pointer hover:shadow-sm transition-shadow duration-150 group relative"
       style={{ borderLeftWidth: 3, borderLeftColor: idea.pillar?.color ?? '#E2E8F0' }}
       onClick={() => router.push(`/dashboard/ideas/${idea.id}`)}
@@ -331,8 +329,15 @@ export default function PipelinePage() {
           ))}
         </div>
         {/* Cards for active tab */}
-        <div className="flex-1 overflow-y-auto space-y-2.5">
-          <AnimatePresence>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.12 }}
+            className="flex-1 overflow-y-auto space-y-2.5"
+          >
             {ideas.filter(i => i.stage === activeTab).map(idea => (
               <IdeaCard
                 key={idea.id}
@@ -342,11 +347,11 @@ export default function PipelinePage() {
                 shotStat={shotStats[idea.id]}
               />
             ))}
-          </AnimatePresence>
-          {ideas.filter(i => i.stage === activeTab).length === 0 && (
-            <div className="text-center py-12 text-[#CBD5E1] text-[14px]">No ideas in {activeTab}</div>
-          )}
-        </div>
+            {ideas.filter(i => i.stage === activeTab).length === 0 && (
+              <div className="text-center py-12 text-[#CBD5E1] text-[14px]">No ideas in {activeTab}</div>
+            )}
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       {/* Modals */}
