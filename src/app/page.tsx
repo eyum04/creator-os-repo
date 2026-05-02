@@ -367,27 +367,28 @@ function HeroSection() {
           </OutlineButton>
         </motion.div>
 
-        {/* Social proof */}
+        {/* Feature highlights */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...sp, delay: 0.08 + totalWords * 0.04 + 0.28 }}
-          className="flex items-center justify-center gap-2.5"
+          className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto"
         >
-          <div className="flex -space-x-2">
-            {['#1a1615', '#156cc2', '#84b9ef', '#453f3d'].map((color, i) => (
-              <div
-                key={i}
-                className="w-7 h-7 rounded-full border-2 flex items-center justify-center"
-                style={{ borderColor: 'rgba(255,255,255,0.6)', backgroundColor: color }}
-              >
-                <span className="text-white text-[9px] font-bold">{['A', 'S', 'K', 'M'][i]}</span>
-              </div>
-            ))}
-          </div>
-          <span className="text-[14px]" style={{ color: C.darkMid }}>
-            Join creators already building with CreatorOS
-          </span>
+          {[
+            { headline: 'Skip the chaos', sub: 'Pipeline keeps ideas organized' },
+            { headline: 'No lost concepts', sub: 'Everything captured and tagged' },
+            { headline: 'Stay consistent', sub: 'Calendar keeps you accountable' },
+            { headline: '20 min to a month plan', sub: 'Real time saved' },
+          ].map(({ headline, sub }) => (
+            <div
+              key={headline}
+              className="rounded-2xl px-4 py-3.5 text-left"
+              style={{ backgroundColor: 'rgba(255,255,255,0.45)', border: '1px solid rgba(255,255,255,0.6)' }}
+            >
+              <p className="text-[13px] font-bold text-[#1a1615] leading-snug mb-0.5">{headline}</p>
+              <p className="text-[11.5px] leading-snug" style={{ color: C.darkMid }}>{sub}</p>
+            </div>
+          ))}
         </motion.div>
       </div>
     </section>
@@ -1037,149 +1038,99 @@ function DevicesSection() {
   )
 }
 
-// ─── Testimonials section ─────────────────────────────────────────────────────
+// ─── Creator Benefits section ─────────────────────────────────────────────────
 
-const TESTIMONIALS = [
+const BENEFITS = [
   {
-    quote: "I went from posting randomly to having a full month planned out in a weekend. CreatorOS is the system I didn't know I needed.",
-    name: "Jasmine Cole",
-    handle: "@jasminecreates",
-    role: "Lifestyle creator",
-    color: "#2563EB",
+    title: "Skip the chaos",
+    description: "Pipeline keeps every idea, draft, and video organized across 4 stages. No more scattered notes.",
+    icon: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
+          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+      </svg>
+    ),
   },
   {
-    quote: "The pipeline feature is a game changer. I can see exactly where every idea is — no more losing concepts in my notes app.",
-    name: "Marcus T.",
-    handle: "@marcustok",
-    role: "Comedy creator",
-    color: "#EF4444",
+    title: "No lost concepts",
+    description: "Everything is captured, tagged by pillar, and searchable. Your best ideas are always one click away.",
+    icon: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
+          d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+      </svg>
+    ),
   },
   {
-    quote: "Setting up my content pillars made me realize I had no real strategy. Now every video has a purpose and a place.",
-    name: "Priya Nair",
-    handle: "@priyacooks",
-    role: "Food & tutorial creator",
-    color: "#10B981",
+    title: "Stay consistent",
+    description: "Visual calendar keeps you accountable. See your posting schedule at a glance and never miss a beat.",
+    icon: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
+          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+    ),
   },
   {
-    quote: "I posted 3× more consistently in my first month using this. The visual calendar keeps me accountable.",
-    name: "Devon Reyes",
-    handle: "@devonbeats",
-    role: "Music creator",
-    color: "#F59E0B",
-  },
-  {
-    quote: "Finally a tool built for creators, not project managers. It's intuitive, fast, and actually fun to use.",
-    name: "Aisha M.",
-    handle: "@aishavibes",
-    role: "Fashion creator",
-    color: "#8B5CF6",
-  },
-  {
-    quote: "The shot list builder alone is worth it. I show up to film knowing exactly what I need — zero wasted sessions.",
-    name: "Tyler Brooks",
-    handle: "@tylerbrolls",
-    role: "Travel creator",
-    color: "#EC4899",
-  },
-  {
-    quote: "I used to forget half my ideas before scripting them. Now I capture everything in seconds and it's right there waiting.",
-    name: "Sofia R.",
-    handle: "@sofiamakes",
-    role: "DIY creator",
-    color: "#06B6D4",
-  },
-  {
-    quote: "The pillar system helped me niche down without feeling boxed in. My engagement doubled within six weeks.",
-    name: "Kofi A.",
-    handle: "@kofiandco",
-    role: "Fitness creator",
-    color: "#10B981",
+    title: "20 minutes to a month plan",
+    description: "Set up your pillars once, capture ideas as they come, and you've got a full month planned faster than you'd think.",
+    icon: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
+          d="M13 10V3L4 14h7v7l9-11h-7z" />
+      </svg>
+    ),
   },
 ]
 
-function TestimonialCard({ quote, name, role, color }: typeof TESTIMONIALS[0]) {
+function BenefitCard({ title, description, icon }: typeof BENEFITS[0]) {
   return (
-    <div className="flex-shrink-0 w-[300px] bg-[#231f1e] border border-[#2e2a29] rounded-2xl p-5 mx-3 flex flex-col">
-      <svg width="18" height="13" viewBox="0 0 20 14" fill="none" className="mb-3 flex-shrink-0" style={{ opacity: 0.3 }}>
-        <path d="M0 14V8.4C0 5.6.8 3.4 2.4 1.8 4 .6 6 0 8.4 0L9 1.4C7.4 1.8 6.2 2.6 5.4 3.8 4.6 4.6 4.2 5.6 4.2 6.8H8.4V14H0ZM11.6 14V8.4C11.6 5.6 12.4 3.4 14 1.8 15.6.6 17.6 0 20 0L20.6 1.4C19 1.8 17.8 2.6 17 3.8 16.2 4.6 15.8 5.6 15.8 6.8H20V14H11.6Z" fill="white" />
-      </svg>
-      <p className="text-[#b8b3af] text-[13.5px] leading-relaxed flex-1 mb-4">{quote}</p>
-      <div className="flex items-center gap-2.5">
-        <div
-          className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0"
-          style={{ backgroundColor: color }}
-        >
-          {name[0]}
-        </div>
-        <div>
-          <p className="text-white text-[12px] font-semibold leading-tight">{name}</p>
-          <p className="text-[#5a5450] text-[11px] mt-0.5">{role}</p>
-        </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ ...sp }}
+      viewport={{ once: true, margin: '0px 0px -50px 0px' }}
+      className="bg-[#231f1e] border border-[#2e2a29] rounded-2xl p-8 flex flex-col"
+    >
+      <div className="w-12 h-12 rounded-xl bg-[#2563EB]/20 flex items-center justify-center mb-4 text-[#2563EB]">
+        {icon}
       </div>
-    </div>
+      <h3 className="text-white text-lg font-semibold mb-3">{title}</h3>
+      <p className="text-[#b8b3af] text-[15px] leading-relaxed">{description}</p>
+    </motion.div>
   )
 }
 
-function TestimonialsSection() {
+function BenefitsSection() {
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: '0px 0px 80px 0px' })
 
-  const row1 = TESTIMONIALS.slice(0, 4)
-  const row2 = TESTIMONIALS.slice(4)
-
   return (
-    <section ref={ref} className="py-28 bg-[#1a1615] overflow-hidden">
-      <style>{`
-        @keyframes marqueeL { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-        @keyframes marqueeR { 0% { transform: translateX(-50%); } 100% { transform: translateX(0); } }
-        .marquee-l { animation: marqueeL 30s linear infinite; }
-        .marquee-r { animation: marqueeR 36s linear infinite; }
-      `}</style>
-
-      <div className="max-w-5xl mx-auto px-8 mb-16">
+    <section ref={ref} className="py-28 bg-[#1a1615]">
+      <div className="max-w-5xl mx-auto px-8">
         <motion.p
           initial={{ opacity: 0, y: 16 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ ...sp, delay: 0.05 }}
           className="text-xs font-semibold uppercase tracking-widest text-[#2563EB] mb-3"
         >
-          Creators love it
+          What you get
         </motion.p>
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ ...sp, delay: 0.12 }}
-          className="text-[36px] font-bold text-white leading-[1.15] tracking-tight max-w-xl"
+          className="text-[36px] font-bold text-white leading-[1.15] tracking-tight mb-16"
         >
           Built for creators who are serious about growing
         </motion.h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {BENEFITS.map((benefit, i) => (
+            <BenefitCard key={i} {...benefit} />
+          ))}
+        </div>
       </div>
-
-      {/* Row 1 — scrolls left */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={inView ? { opacity: 1, y: 0 } : {}}
-        transition={{ ...sp, delay: 0.2 }}
-        className="mb-4"
-        style={{ maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)', WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)' }}
-      >
-        <div className="flex marquee-l" style={{ width: 'max-content' }}>
-          {[...row1, ...row1].map((t, i) => <TestimonialCard key={i} {...t} />)}
-        </div>
-      </motion.div>
-
-      {/* Row 2 — scrolls right */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={inView ? { opacity: 1, y: 0 } : {}}
-        transition={{ ...sp, delay: 0.3 }}
-        style={{ maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)', WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)' }}
-      >
-        <div className="flex marquee-r" style={{ width: 'max-content' }}>
-          {[...row2, ...row2].map((t, i) => <TestimonialCard key={i} {...t} />)}
-        </div>
-      </motion.div>
     </section>
   )
 }
@@ -1682,7 +1633,7 @@ export default function LandingPage() {
         <HeroSection />
         <AppPreviewSection />
         <DevicesSection />
-        <TestimonialsSection />
+        <BenefitsSection />
         <ProblemSection />
         <FeaturesSection />
         <HowItWorksSection />
